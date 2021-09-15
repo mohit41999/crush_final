@@ -8,6 +8,8 @@ class coinsService {
   Future<Coins> getCoins() async {
     var Response = await http.post(Uri.parse(BASE_URL + AppConstants.COINS),
         body: {'token': '123456789'});
+    var r = jsonDecode(Response.body);
+    print(r);
     return Coins.fromJson(jsonDecode(Response.body));
   }
 }

@@ -24,6 +24,8 @@ class _coinsPgState extends State<coinsPg> {
       coinsService().getCoins().then((value) {
         setState(() {
           coinsDetails = value.data;
+
+          print(value);
         });
       });
     });
