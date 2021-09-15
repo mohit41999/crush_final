@@ -446,14 +446,14 @@ class _homePgState extends State<homePg> {
                                                                   .circular(5)),
                                                       child: FlatButton(
                                                           onPressed: () {
-                                                            Navigator
-                                                                .pushReplacement(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder: (context) =>
-                                                                            videoCallPg(
-                                                                              user_id: widget.user_id,
-                                                                            )));
+                                                            // Navigator
+                                                            //     .pushReplacement(
+                                                            //         context,
+                                                            //         MaterialPageRoute(
+                                                            //             builder: (context) =>
+                                                            //                 videoCallPg(
+                                                            //                   user_id: widget.user_id,
+                                                            //                 )));
                                                           },
                                                           child: Text(
                                                             'Ok',
