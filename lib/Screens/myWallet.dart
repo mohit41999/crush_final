@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class myWalletPg extends StatefulWidget {
-  final String coins;
-  const myWalletPg({Key? key, required this.user_id, required this.coins})
-      : super(key: key);
+  const myWalletPg({
+    Key? key,
+    required this.user_id,
+  }) : super(key: key);
   final String user_id;
   @override
   _myWalletPgState createState() => _myWalletPgState();
@@ -15,7 +16,7 @@ class myWalletPg extends StatefulWidget {
 
 class _myWalletPgState extends State<myWalletPg> {
   late Map commonbody = {'token': '123456789', 'user_id': widget.user_id};
-  late String coins = widget.coins;
+  late String Money = '';
   List transactionHistory = [];
   Future myWallet() async {
     var response = await http.post(
@@ -24,57 +25,7 @@ class _myWalletPgState extends State<myWalletPg> {
     var Response = jsonDecode(response.body);
     if (Response['status'] == true) {
       setState(() {
-        coins = Response['data']['Total Coins'];
-      });
-    }
-  }
-
-  Future TransactionHistory() async {
-    var response = await http.post(
-        Uri.parse(
-            "http://crush.notionprojects.tech/api/transaction_history.php"),
-        body: commonbody);
-    var Response = jsonDecode(response.body);
-    if (Response['status']) {
-      setState(() {
-        transactionHistory = Response['data'];
-      });
-    }
-  }
-
-  Future deposit() async {
-    var response = await http.post(
-        Uri.parse('https://crush.notionprojects.tech/api/deposit.php'),
-        body: {
-          'token': '123456789',
-          'user_id': widget.user_id,
-          'credit_amount': coins_amount
-        });
-    var Response = jsonDecode(response.body);
-    if (Response['status']) {
-      Navigator.pop(context);
-    }
-  }
-
-  Future withdraw() async {
-    var response = await http.post(
-        Uri.parse('https://crush.notionprojects.tech/api/withdrawal.php'),
-        body: {
-          'token': '123456789',
-          'user_id': widget.user_id,
-          'debit_amount': coins_amount
-        });
-    var Response = jsonDecode(response.body);
-    if (Response['status']) {
-      Navigator.pop(context);
-    } else {
-      setState(() {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(Response['message']),
-          duration: Duration(seconds: 1),
-        ));
-        Navigator.pop(context);
+        Money = Response['data']['Total Balance'];
       });
     }
   }
@@ -87,7 +38,7 @@ class _myWalletPgState extends State<myWalletPg> {
     // TODO: implement initState
     super.initState();
     setState(() {
-      TransactionHistory();
+      myWallet();
     });
   }
 
@@ -120,7 +71,7 @@ class _myWalletPgState extends State<myWalletPg> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('INR ${coins.toString()}',
+                          child: Text('INR ${Money.toString()}',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 30,
@@ -150,45 +101,7 @@ class _myWalletPgState extends State<myWalletPg> {
                             width: 118,
                             height: 36,
                             child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            AlertDialog(
-                                              title: Text(
-                                                  'Enter Coints Amount to Deposit'),
-                                              content: TextField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller:
-                                                    coins_amountController,
-                                                onChanged: (value) {
-                                                  value = coins_amountController
-                                                      .text
-                                                      .toString();
-                                                  coins_amount = value;
-                                                },
-                                              ),
-                                              actions: [
-                                                commonBtn(
-                                                    s: 'ADD',
-                                                    bgcolor: appThemeColor,
-                                                    textColor: Colors.white,
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        deposit().then((value) {
-                                                          setState(() {
-                                                            myWallet();
-                                                            TransactionHistory();
-                                                          });
-                                                        });
-                                                      });
-                                                    })
-                                              ],
-                                            ));
-                                  });
-                                },
+                                onPressed: () {},
                                 child: Text(
                                   'Deposit',
                                   style: TextStyle(
@@ -205,46 +118,7 @@ class _myWalletPgState extends State<myWalletPg> {
                             width: 118,
                             height: 36,
                             child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            AlertDialog(
-                                              title: Text(
-                                                  'Enter Coints Amount to Withdraw'),
-                                              content: TextField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                controller:
-                                                    coins_amountController,
-                                                onChanged: (value) {
-                                                  value = coins_amountController
-                                                      .text
-                                                      .toString();
-                                                  coins_amount = value;
-                                                },
-                                              ),
-                                              actions: [
-                                                commonBtn(
-                                                    s: 'Withdraw',
-                                                    bgcolor: appThemeColor,
-                                                    textColor: Colors.white,
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        withdraw()
-                                                            .then((value) {
-                                                          setState(() {
-                                                            myWallet();
-                                                            TransactionHistory();
-                                                          });
-                                                        });
-                                                      });
-                                                    })
-                                              ],
-                                            ));
-                                  });
-                                },
+                                onPressed: () {},
                                 child: Text(
                                   'Withdraw',
                                   style: TextStyle(

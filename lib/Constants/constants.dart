@@ -8,19 +8,23 @@ class commonBtn extends StatelessWidget {
   final Color bgcolor;
   final Color textColor;
   final VoidCallback onPressed;
+  final double height;
+  final double width;
   const commonBtn({
     Key? key,
     required this.s,
     required this.bgcolor,
     required this.textColor,
     required this.onPressed,
+    this.height = 50,
+    this.width = 320,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
-      width: 320,
+      height: height,
+      width: width,
       child: TextButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(bgcolor),

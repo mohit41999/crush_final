@@ -1,11 +1,18 @@
+import 'dart:convert';
+
 import 'package:crush_notion/Constants/constants.dart';
 import 'package:crush_notion/Model/coinsModel.dart';
 import 'package:crush_notion/Services/coinsServices.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class coinsPg extends StatefulWidget {
+  final String userid;
+  final String coins;
   const coinsPg({
     Key? key,
+    required this.userid,
+    required this.coins,
   }) : super(key: key);
 
   @override
@@ -14,18 +21,67 @@ class coinsPg extends StatefulWidget {
 
 class _coinsPgState extends State<coinsPg> {
   List coinsDetails = [];
+  late String CoinsBalance;
+  late String withdrawamount;
+  TextEditingController withrawController = TextEditingController();
+  Future addCoins(String coinsplan) async {
+    var response = await http.post(
+        Uri.parse('http://crush.notionprojects.tech/api/add_coins_plan.php'),
+        body: {
+          'token': '123456789',
+          'user_id': widget.userid,
+          'coins_amount': coinsplan,
+        });
+    var Response = jsonDecode(response.body);
+    if (Response['status']) {
+      print('coins added successssssss');
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(milliseconds: 500),
+        backgroundColor: Colors.green,
+        content: Text(Response['message']),
+      ));
+      Navigator.pop(context);
+    }
+  }
+
+  Future withdrawCoins(String withdraw_amount) async {
+    var response = await http.post(
+        Uri.parse('http://crush.notionprojects.tech/api/withdraw_coins.php'),
+        body: {
+          'token': '123456789',
+          'user_id': widget.userid,
+          'withdrawal_amount': withdraw_amount
+        });
+
+    var Response = jsonDecode(response.body);
+    if (Response['status']) {
+      setState(() {
+        print('withdraw successsss ......');
+        Navigator.pop(context);
+      });
+    } else {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.red,
+        duration: Duration(milliseconds: 500),
+        content: Text(Response['message'] + ' to withdraw'),
+      ));
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    CoinsBalance = widget.coins;
 
     setState(() {
-      coinsService().getCoins().then((value) {
+      coinsService().getCoins(widget.userid).then((value) {
         setState(() {
           coinsDetails = value.data;
-
-          print(value);
+          CoinsBalance = coinsDetails[0].user_total_coins;
+          print(CoinsBalance + '1111111111111111');
         });
       });
     });
@@ -62,7 +118,7 @@ class _coinsPgState extends State<coinsPg> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('200',
+                          child: Text(CoinsBalance,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 30,
@@ -88,7 +144,55 @@ class _coinsPgState extends State<coinsPg> {
                     width: 118,
                     height: 36,
                     child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                      title: Text(
+                                          'Enter Coints Amount to Withdraw'),
+                                      content: TextField(
+                                        keyboardType: TextInputType.number,
+                                        controller: withrawController,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            value = withrawController.text
+                                                .toString();
+                                            withdrawamount = value;
+                                          });
+                                        },
+                                      ),
+                                      actions: [
+                                        commonBtn(
+                                            s: 'Withdraw',
+                                            bgcolor: appThemeColor,
+                                            textColor: Colors.white,
+                                            onPressed: () {
+                                              setState(() {
+                                                withdrawCoins(withdrawamount)
+                                                    .then((value) {
+                                                  setState(() {
+                                                    coinsService()
+                                                        .getCoins(widget.userid)
+                                                        .then((value) {
+                                                      setState(() {
+                                                        coinsDetails =
+                                                            value.data;
+                                                        CoinsBalance =
+                                                            coinsDetails[0]
+                                                                .user_total_coins;
+
+                                                        print(value);
+                                                      });
+                                                    });
+                                                  });
+                                                });
+                                              });
+                                            })
+                                      ],
+                                    ));
+                          });
+                        },
                         child: Text(
                           'Withdraw',
                           style: TextStyle(color: appThemeColor, fontSize: 14),
@@ -193,11 +297,107 @@ class _coinsPgState extends State<coinsPg> {
                                         borderRadius:
                                             BorderRadius.circular(5.0),
                                       ))),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                                title: Text(
+                                                    'Are you Sure You Want to Add ${coinsDetails[index].amount} Coins'),
+                                                actions: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      commonBtn(
+                                                        height: 40,
+                                                        width: 60,
+                                                        s: 'No',
+                                                        bgcolor: Colors.red,
+                                                        textColor: Colors.white,
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                      commonBtn(
+                                                        height: 40,
+                                                        width: 60,
+                                                        s: 'Yes',
+                                                        bgcolor: Colors.green,
+                                                        textColor: Colors.white,
+                                                        onPressed: () {
+                                                          addCoins(coinsDetails[
+                                                                      index]
+                                                                  .amount)
+                                                              .then((value) {
+                                                            setState(() {
+                                                              coinsService()
+                                                                  .getCoins(widget
+                                                                      .userid)
+                                                                  .then(
+                                                                      (value) {
+                                                                setState(() {
+                                                                  coinsDetails =
+                                                                      value
+                                                                          .data;
+                                                                  CoinsBalance =
+                                                                      coinsDetails[
+                                                                              0]
+                                                                          .user_total_coins;
+
+                                                                  print(value);
+                                                                });
+                                                              });
+                                                            });
+                                                          });
+                                                        },
+                                                      )
+                                                    ],
+                                                  )
+                                                ],
+                                              ));
+                                    });
+                                  },
                                   child: Text(
                                     '\u{20B9}' + coinsDetails[index].amount,
                                     style: TextStyle(color: Colors.white),
                                   )),
+                              // TextButton(
+                              //     style: ButtonStyle(
+                              //         backgroundColor:
+                              //             MaterialStateProperty.all<Color>(
+                              //                 appThemeColor),
+                              //         shape: MaterialStateProperty.all<
+                              //                 RoundedRectangleBorder>(
+                              //             RoundedRectangleBorder(
+                              //           borderRadius:
+                              //               BorderRadius.circular(5.0),
+                              //         ))),
+                              //     onPressed: () {
+                              //       addCoins(coinsDetails[index].amount)
+                              //           .then((value) {
+                              //         setState(() {
+                              //           coinsService()
+                              //               .getCoins(widget.userid)
+                              //               .then((value) {
+                              //             setState(() {
+                              //               coinsDetails = value.data;
+                              //               CoinsBalance = coinsDetails[0]
+                              //                   .user_total_coins;
+                              //
+                              //               print(value);
+                              //             });
+                              //           });
+                              //         });
+                              //       });
+                              //     },
+                              //     child: Text(
+                              //       '\u{20B9}' + coinsDetails[index].amount,
+                              //       style: TextStyle(color: Colors.white),
+                              //     )),
                             ),
                           )
                         ],

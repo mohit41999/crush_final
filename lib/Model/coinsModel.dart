@@ -23,7 +23,8 @@ class Coins {
   factory Coins.fromJson(Map<String, dynamic> json) => Coins(
         status: json["status"],
         message: json["message"],
-        data: List<coinsData>.from(json["data"].map((x) => coinsData.fromJson(x))),
+        data: List<coinsData>.from(
+            json["data"].map((x) => coinsData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -38,9 +39,11 @@ class coinsData {
     required this.planName,
     required this.totalCoin,
     required this.amount,
+    required this.user_total_coins,
   });
 
   String planName;
+  String user_total_coins;
   String totalCoin;
   String amount;
 
@@ -48,11 +51,13 @@ class coinsData {
         planName: json["plan_name"],
         totalCoin: json["total_coin"],
         amount: json["amount"],
+        user_total_coins: json["user_total_coins"],
       );
 
   Map<String, dynamic> toJson() => {
         "plan_name": planName,
         "total_coin": totalCoin,
         "amount": amount,
+        "user_total_coins": user_total_coins,
       };
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:crush_notion/Constants/constants.dart';
@@ -62,10 +63,16 @@ class _myAccountPgState extends State<myAccountPg> {
     my_account = myAccountService().get_myAccount(widget.user_id).then((value) {
       setState(() {
         accountdetails = value;
+        print(accountdetails.data[0].total_coins.toString());
         loading = false;
       });
       return accountdetails;
     });
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    initState();
+    setState(() {});
   }
 
   @override
@@ -115,7 +122,27 @@ class _myAccountPgState extends State<myAccountPg> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (_) => coinsPg()));
+                                                builder: (_) => coinsPg(
+                                                      userid: widget.user_id,
+                                                      coins: accountdetails
+                                                          .data[0].total_coins
+                                                          .toString(),
+                                                    ))).then((value) {
+                                          setState(() {
+                                            my_account = myAccountService()
+                                                .get_myAccount(widget.user_id)
+                                                .then((value) {
+                                              setState(() {
+                                                accountdetails = value;
+                                                print(accountdetails
+                                                    .data[0].total_coins
+                                                    .toString());
+                                                loading = false;
+                                              });
+                                              return accountdetails;
+                                            });
+                                          });
+                                        });
                                       });
                                     },
                                     child: Padding(
@@ -153,9 +180,6 @@ class _myAccountPgState extends State<myAccountPg> {
                                             MaterialPageRoute(
                                                 builder: (_) => myWalletPg(
                                                       user_id: widget.user_id,
-                                                      coins: accountdetails
-                                                          .data[0].total_coins
-                                                          .toString(),
                                                     ))).then((value) {
                                           setState(() {
                                             my_account = myAccountService()
@@ -262,7 +286,26 @@ class _myAccountPgState extends State<myAccountPg> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) => coinsPg()));
+                                        builder: (_) => coinsPg(
+                                              userid: widget.user_id,
+                                              coins: accountdetails
+                                                  .data[0].total_coins
+                                                  .toString(),
+                                            ))).then((value) {
+                                  setState(() {
+                                    my_account = myAccountService()
+                                        .get_myAccount(widget.user_id)
+                                        .then((value) {
+                                      setState(() {
+                                        accountdetails = value;
+                                        print(accountdetails.data[0].total_coins
+                                            .toString());
+                                        loading = false;
+                                      });
+                                      return accountdetails;
+                                    });
+                                  });
+                                });
                               });
                             },
                             child: Center(
