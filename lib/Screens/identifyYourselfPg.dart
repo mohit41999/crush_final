@@ -31,25 +31,25 @@ class _identifyYourselgPgState extends State<identifyYourselgPg> {
   late String gender;
   late String name;
   DateTime currentDate = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2050));
+    if (pickedDate != null && pickedDate != currentDate)
+      setState(() {
+        currentDate = pickedDate;
+        Day = currentDate.day.toString();
+        Year = currentDate.year.toString();
+        Month = currentDate.month.toString();
+
+        print(currentDate);
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: currentDate,
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2050));
-      if (pickedDate != null && pickedDate != currentDate)
-        setState(() {
-          currentDate = pickedDate;
-          Day = currentDate.day.toString();
-          Year = currentDate.year.toString();
-          Month = currentDate.month.toString();
-
-          print(currentDate);
-        });
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: ListView(
