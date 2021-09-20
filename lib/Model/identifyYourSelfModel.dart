@@ -2,7 +2,6 @@
 //
 //     final identifyYourself = identifyYourselfFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 IdentifyYourself identifyYourselfFromJson(String str) =>

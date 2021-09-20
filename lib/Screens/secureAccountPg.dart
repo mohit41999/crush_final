@@ -172,7 +172,7 @@ class _secureAccountPgState extends State<secureAccountPg> {
                     suffixIcon: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: IconButton(
-                        icon: (boolpass == true)
+                        icon: (boolpass)
                             ? Icon(
                                 FontAwesomeIcons.eyeSlash,
                                 size: 18,
@@ -183,7 +183,7 @@ class _secureAccountPgState extends State<secureAccountPg> {
                               ),
                         onPressed: () {
                           setState(() {
-                            (boolpass == true)
+                            (boolpass )
                                 ? boolpass = false
                                 : boolpass = true;
                           });
